@@ -26,7 +26,7 @@
    
       var seed = 1;
       function random() { var x = Math.sin(seed) * 10000; seed += 1; return x - Math.floor(x); }
-      function uniform(min, max) { var r = random(); return min + r * (max - min); }
+      function uniform(min, max) { return min }
       function rbool() { return random() > 0.5; }
       
       function $(id) { return document.getElementById(id); }
@@ -40,11 +40,11 @@
       
       var a, b, c, d, e, t, j, flip, xi, yi, xn, yn, vertical, offset, width, height, radius;
       function first() { e = uniform(-j, j); next();}
-      function next()  { var flipold = flip; flip = rbool(); a = (flip == flipold ? -e: e); b = uniform(-j, j); c = uniform(-j, j); d = uniform(-j, j); e = uniform(-j, j);}
+      function next()  { var flipold = flip; flip = false; a = (flip == flipold ? -e: e); b = uniform(-j, j); c = uniform(-j, j); d = uniform(-j, j); e = uniform(-j, j);}
       function sl()  { return vertical ? height / yn : width / xn; }
       function sw()  { return vertical ? width / xn : height / yn;}
-      function ol()  { return offset + sl() * (vertical ? yi : xi); }
-      function ow()  { return offset + sw() * (vertical ? xi : yi); }
+      function ol()  { return offset + sl() * (vertical ? yi : xi) - sl()/2; }
+      function ow()  { return offset + sw() * (vertical ? xi : yi) - sw()/2; }
       function l(v)  { var ret = ol() + sl() * v; return Math.round(ret * 100) / 100; }
       function w(v)  { var ret = ow() + sw() * v * (flip ? -1.0 : 1.0); return Math.round(ret * 100) / 100; }
       function p0l() { return l(0.0); }
@@ -82,9 +82,9 @@
          var str = "";
          vertical = 0;
          
-         for (yi = 1; yi < yn; ++yi)
+         for (yi = 1; yi < yn+1; ++yi)
          {
-            xi = 0;
+            xi = 1;
             first();
             str += "M " + p0l() + "," + p0w() + " ";
             for (; xi < xn; ++xi)
@@ -103,9 +103,9 @@
          var str = "";
          vertical = 1;
          
-         for (xi = 1; xi < xn; ++xi)
+         for (xi = 1; xi < xn+1; ++xi)
          {
-            yi = 0;
+            yi = 1;
             first();
             str += "M " + p0w() + "," + p0l() + " ";
             for (; yi < yn; ++yi)
@@ -175,12 +175,15 @@
          data += "<path fill=\"none\" stroke=\"DarkBlue\" stroke-width=\"0.1\" d=\"";
          data += gen_dh();
          data += "\"></path>";
-         data += "<path fill=\"none\" stroke=\"DarkRed\" stroke-width=\"0.1\" d=\"";
-         data += gen_dv();
-         data += "\"></path>";
-         data += "<path fill=\"none\" stroke=\"Black\" stroke-width=\"0.1\" d=\"";
-         data += gen_db();
-         data += "\"></path>";
+         
+          data += "<g>";
+          data += "<path fill=\"none\" stroke=\"DarkRed\" stroke-width=\"0.1\" d=\"";
+          data += gen_dv();
+          data += "\"></path>";
+          data += "<path fill=\"none\" stroke=\"Black\" stroke-width=\"0.1\" d=\"";
+          data += gen_db();
+          data += "\"></path>";
+          data += "</g>";
          data += "</svg>";
          
          save("jigsaw.svg", data);
@@ -202,8 +205,8 @@
       </tr>
       <tr>
          <td>Jitter:</td>
-         <td><input id="_jitter" type="text" value="4%" onchange="update_jitter()"/></td>
-         <td><input id="jitter" type="range" value="4" min="0" max="13" step="0.1" onchange="updatejitter()"/></td>
+         <td><input id="_jitter" type="text" value="0%" onchange="update_jitter()"/></td>
+         <td><input id="jitter" type="range" value="0" min="0" max="13" step="0.1" onchange="updatejitter()"/></td>
       </tr>
       <tr>
          <td>Corner Radius:</td>
